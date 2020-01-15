@@ -1,13 +1,17 @@
+import { IReactionDisposer } from 'mobx';
+
 export const kReactableMethodNames = Symbol('ReactableMethodNames');
 export const kShouldDispose = Symbol('ShouldDispose');
+export const kDisposers = Symbol('Disposers');
 
-export type ReactableMethodNamesOwner = {
+interface ReactableMixin {
   [kReactableMethodNames]: string[];
-};
+  [kDisposers]: Record<string, IReactionDisposer | undefined>;
+  makeReactable(): void;
+  unmakeReactable(): void;
+}
 
-export default class ReactableMixin implements ReactableMethodNamesOwner {
-  [kReactableMethodNames] = [];
-
+class ReactableMixin {
   makeReactable() {
     const reactableMethodNames = this[kReactableMethodNames];
     for (const methodName of reactableMethodNames) {
@@ -22,3 +26,5 @@ export default class ReactableMixin implements ReactableMethodNamesOwner {
     }
   }
 }
+
+export default ReactableMixin;

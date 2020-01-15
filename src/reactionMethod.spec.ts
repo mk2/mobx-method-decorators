@@ -1,25 +1,21 @@
-import applyMixins from '@/helpers/mixin/applyMixins';
 import * as mobx from 'mobx';
 
 import ReactableMixin from './ReactableMixin';
 import reactionMethod from './reactionMethod';
 
-let effectFnBodyMock = jest.fn();
-let disposerMock = jest.fn();
-let effectMock: Function | undefined;
-let reactionMock = jest.spyOn(mobx, 'reaction');
-
-interface TargetClass extends ReactableMixin {}
-class TargetClass {
-  @reactionMethod(() => ({}))
-  effectFn(...args: any[]) {
-    effectFnBodyMock(args);
-  }
-}
-
-applyMixins(TargetClass, [ReactableMixin]);
-
 describe('reactionMethod', () => {
+  let effectFnBodyMock = jest.fn();
+  let disposerMock = jest.fn();
+  let effectMock: Function | undefined;
+  let reactionMock = jest.spyOn(mobx, 'reaction');
+
+  class TargetClass extends ReactableMixin {
+    @reactionMethod(() => ({}))
+    effectFn(...args: any[]) {
+      effectFnBodyMock(args);
+    }
+  }
+
   beforeEach(() => {
     effectFnBodyMock = jest.fn();
     disposerMock = jest.fn();
@@ -44,7 +40,14 @@ describe('reactionMethod', () => {
   it('reactionのeffectが実行されると、クラスのeffect関数が実行されること', () => {
     const target = new TargetClass();
     target.makeReactable();
-    // effectMock?.();
+    effectMock?.();
+    expect(effectFnBodyMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('reactionのeffectが実行されると、クラスのeffect関数が実行されること', () => {
+    const target = new TargetClass();
+    target.makeReactable();
+    target.effectFn();
     expect(effectFnBodyMock).toHaveBeenCalledTimes(1);
   });
 });

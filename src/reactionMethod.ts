@@ -1,41 +1,34 @@
-import assert from 'assert';
+import { IReactionPublic, reaction } from 'mobx';
 
-import { kReactableMethodNames, kShouldDispose } from '@/helpers/mobx/ReactableMixin';
-import { IReactionDisposer, IReactionPublic, reaction } from 'mobx';
-
-const kDisposer = Symbol('Disposer');
-
-type DisposerOwner = {
-  [kDisposer]: IReactionDisposer | undefined;
-};
+import ReactableMixin, { kDisposers, kReactableMethodNames, kShouldDispose } from './ReactableMixin';
 
 export default function reactionMethod<T>(expression: (r: IReactionPublic) => T): MethodDecorator {
-  return (target: any, methodName, descriptor: TypedPropertyDescriptor<any>) => {
-    assert(target != null, 'target is null or undefined');
-    assert(target[kReactableMethodNames], 'target does not have kReactableMethodNames symbol');
+  return (target: any, propertyKey, descriptor: TypedPropertyDescriptor<any>) => {
+    const methodName = propertyKey.toString();
     if (!target[kReactableMethodNames]) target[kReactableMethodNames] = [];
-    target[kReactableMethodNames].push(methodName);
+    if (!target[kReactableMethodNames].includes(methodName)) target[kReactableMethodNames].push(methodName);
 
     const effectFn = descriptor.value as Function;
     return {
       configurable: true,
       get() {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
-        const self = this as DisposerOwner;
-        const disposer = self[kDisposer];
-        return ((...args: any[]) => {
-          if (args[0] === kShouldDispose) {
+        const self = this as ReactableMixin;
+        if (!self[kDisposers]) self[kDisposers] = {};
+        const disposer = self[kDisposers][methodName];
+        return ((arg: T, r: IReactionPublic) => {
+          if ((arg as any) === kShouldDispose) {
             disposer?.();
-            self[kDisposer] = undefined;
+            self[kDisposers][methodName] = undefined;
             return;
           }
 
           if (disposer) {
             // 既にreactionの登録が終わっていた場合は、普通のメソッド呼び出しなので、オリジナルのメソッドを呼び出す
-            effectFn.apply(self, args);
+            effectFn.apply(self, [arg, r]);
           } else {
-            self[kDisposer] = reaction(expression, v => {
-              effectFn.apply(self, [v]);
+            self[kDisposers][methodName] = reaction(expression, (...args: any[]) => {
+              effectFn.apply(self, args);
             });
           }
         }) as any;

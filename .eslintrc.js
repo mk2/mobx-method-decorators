@@ -1,13 +1,17 @@
 module.exports = {
   root: true,
-  ignorePatterns: ['node_modules/'],
+  ignorePatterns: ['node_modules/', 'lib/'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
+  plugins: [
+    'jest',
+  ],
   extends: ['eslint:recommended', 'plugin:prettier/recommended'],
   env: {
+    'jest/globals': true,
     node: true,
     es6: true,
   },
