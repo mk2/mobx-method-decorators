@@ -1,6 +1,7 @@
 {
   "name": "mobx-method-decorators",
-  "version": "0.0.5",
+  "version": "0.0.6",
+  "repository": "git@github.com:mk2/mobx-method-decorators.git",
   "files": [
     "lib",
     "README.md",
