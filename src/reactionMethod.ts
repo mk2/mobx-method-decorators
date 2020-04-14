@@ -16,8 +16,8 @@ export default function reactionMethod<T>(expression: (r: IReactionPublic) => T)
         const self = this as ReactableMixin;
         if (!self[kDisposers]) self[kDisposers] = {};
         const disposer = self[kDisposers][methodName];
-        return ((arg: T, r: IReactionPublic) => {
-          if ((arg as any) === kShouldDispose) {
+        return ((arg: unknown, r: IReactionPublic) => {
+          if (arg === kShouldDispose) {
             disposer?.();
             self[kDisposers][methodName] = undefined;
             return;
@@ -27,7 +27,7 @@ export default function reactionMethod<T>(expression: (r: IReactionPublic) => T)
             // 既にreactionの登録が終わっていた場合は、普通のメソッド呼び出しなので、オリジナルのメソッドを呼び出す
             effectFn.apply(self, [arg, r]);
           } else {
-            self[kDisposers][methodName] = reaction(expression, (...args: any[]) => {
+            self[kDisposers][methodName] = reaction(expression, (...args: unknown[]) => {
               effectFn.apply(self, args);
             });
           }

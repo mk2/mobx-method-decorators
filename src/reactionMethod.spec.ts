@@ -4,22 +4,24 @@ import ReactableMixin from './ReactableMixin';
 import reactionMethod from './reactionMethod';
 
 describe('reactionMethod', () => {
-  let effectFnBodyMock = jest.fn();
-  let disposerMock = jest.fn();
+  const effectFnBodyMock = jest.fn();
+  const disposerMock = jest.fn();
+  const reactionMock = jest.spyOn(mobx, 'reaction');
+
   let effectMock: Function | undefined;
-  let reactionMock = jest.spyOn(mobx, 'reaction');
 
   class TargetClass extends ReactableMixin {
     @reactionMethod(() => ({}))
-    effectFn(...args: any[]) {
+    effectFn(...args: unknown[]) {
       effectFnBodyMock(args);
     }
   }
 
   beforeEach(() => {
-    effectFnBodyMock = jest.fn();
-    disposerMock = jest.fn();
-    reactionMock = jest.spyOn(mobx, 'reaction').mockImplementation((_expression: unknown, effect: any) => {
+    effectFnBodyMock.mockClear();
+    disposerMock.mockClear();
+    reactionMock.mockClear();
+    reactionMock.mockImplementation((_expression: unknown, effect: any) => {
       effectMock = effect;
       return disposerMock as any;
     });

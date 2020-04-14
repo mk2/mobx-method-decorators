@@ -5,6 +5,7 @@ export const kShouldDispose = Symbol('ShouldDispose');
 export const kDisposers = Symbol('Disposers');
 
 interface ReactableMixin {
+  [methodName: string]: Function;
   [kReactableMethodNames]: string[];
   [kDisposers]: Record<string, IReactionDisposer | undefined>;
   makeReactable(): void;
@@ -15,14 +16,14 @@ class ReactableMixin {
   makeReactable() {
     const reactableMethodNames = this[kReactableMethodNames];
     for (const methodName of reactableMethodNames) {
-      (this as any)[methodName]();
+      this[methodName]();
     }
   }
 
   unmakeReactable() {
     const reactableMethodNames = this[kReactableMethodNames];
     for (const methodName of reactableMethodNames) {
-      (this as any)[methodName](kShouldDispose);
+      this[methodName](kShouldDispose);
     }
   }
 }
