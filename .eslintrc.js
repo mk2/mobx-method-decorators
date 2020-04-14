@@ -6,9 +6,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  plugins: [
-    'jest',
-  ],
+  plugins: ['jest', 'simple-import-sort'],
   extends: ['eslint:recommended', 'plugin:prettier/recommended'],
   env: {
     'jest/globals': true,
@@ -20,6 +18,7 @@ module.exports = {
       files: ['**/*.ts'],
       extends: ['plugin:@typescript-eslint/recommended', 'prettier/@typescript-eslint'],
       rules: {
+        'simple-import-sort/sort': 'error',
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/no-unused-vars': [
           'warn',
