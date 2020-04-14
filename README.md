@@ -1,3 +1,5 @@
+![Node.js CI](https://github.com/mk2/mobx-method-decorators/workflows/Node.js%20CI/badge.svg?branch=master)
+
 # mobx-method-decorators
 
 - Assist `reaction(...)` calling with class-oriented way.
