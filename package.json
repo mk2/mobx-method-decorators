@@ -35,7 +35,7 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-simple-import-sort": "^5.0.2",
     "jest": "^24.9.0",
-    "mobx": "^5.15.2",
+    "mobx": "^6.1.8",
     "prettier": "^1.19.1",
     "typescript": "^3.7.4"
   },
